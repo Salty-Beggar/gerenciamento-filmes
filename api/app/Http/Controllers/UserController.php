@@ -10,5 +10,7 @@ class UserController extends Controller
 	public function create(Request $request) {
 		$user = new User();
 		$user->fill($request);
+		$user->save();
+		return response($user, 200);
 	}
 }
