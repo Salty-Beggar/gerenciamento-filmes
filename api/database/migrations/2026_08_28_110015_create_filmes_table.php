@@ -13,10 +13,11 @@ return new class extends Migration
     {
         Schema::create('filmes', function (Blueprint $table) {
             $table->id();
+	    $table->foreign('usuario_id', User::class);
 	    $table->string('titulo');
 	    $table->text('sinopse');
 	    $table->year('ano');
-	    $table->foreign('categoria');
+	    $table->foreign('categoria_id', Categoria::class);
 	    $table->string('imagem_capa');
 	    $table->string('trailer_url');
             $table->timestamps();
