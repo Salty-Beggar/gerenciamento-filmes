@@ -21,8 +21,6 @@
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
-
-    "allowImportingTsExtensions": true
   },
   "include": ["src"]
 }

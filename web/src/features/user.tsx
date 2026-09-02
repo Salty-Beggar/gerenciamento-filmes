@@ -5,7 +5,17 @@ import useAppContext from '../context.tsx';
 import useOpenModal from '../hooks/openModal.ts';
 
 const UserTab = () => {
+	const { body, setBody, fetchConfig } = useAppContext();
 	const openModal = useOpenModal();
+	const [filmes, setFilmes] = useState<{
+		id: number,
+		nome: string,
+		sinopse: string,
+		ano: string,
+		categoria: string,
+		link: string,
+		imagem: string,
+	}[]>([]);
 
 	const view = {
 		handleStart: useCallback((id: number) => {
@@ -13,28 +23,17 @@ const UserTab = () => {
 		}, [openModal])
 	};
 
-	const filmes = [
-		{
-			id: 5,
-			nome: 'Shrek 2',
-			sinopse: 'O shrek 2 é um filme muito massa.',
-			ano: '2023',
-			categoria: 'Ficção científica',
-			link: 'http://blehhh.com',
-			imagem: 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fstatic.tvtropes.org%2Fpmwiki%2Fpub%2Fimages%2Fultrakill_cover.jpg&f=1&nofb=1&ipt=5f7f79e75656ed7d7a5991a07ccf7ba06b0456c0217c257a4fa69d45df97309a'
-		}
-	];
 	return <Tab tabType={2}>
 		<div>
 			<label>Categoria: </label>
-			<select>
+			<select value={body.categoria} onChange={(e) => setBody(prev => ({...prev, categoria: e.target.value}))}>
 				<option>Ficção</option>
 				<option>Aventura</option>
 			</select>
 		</div>
 		<div>
 			<label>Ano: </label>
-			<input type='text' />
+			<input type='text' value={body.ano} onChange={(e) => setBody(prev => ({...prev, ano: e.target.value}))} />
 		</div>
 		<div style={{
 			display: 'flex',

@@ -7,14 +7,14 @@ export const AppContext = createContext<{
 	setLoadingTab: React.Dispatch<React.SetStateAction<boolean>>,
 	selectedTab: TabType,
 	setSelectedTab: React.Dispatch<React.SetStateAction<TabType>>,
-	body: Record<string, number>,
-	setBody: React.Dispatch<React.SetStateAction<Record<string, number>>>,
+	body: Record<string, string>,
+	setBody: React.Dispatch<React.SetStateAction<Record<string, string>>>,
 	isModal: boolean,
 	setIsModal: React.Dispatch<React.SetStateAction<boolean>>,
 	modalID: number,
 	setModalID: React.Dispatch<React.SetStateAction<number>>,
-	fetchConfig: Record<string, unknown>,
-	setFetchConfig: React.Dispatch<React.SetStateAction<Record<string, unknown>>>
+	fetchConfig: Record<string, any>[],
+	setFetchConfig: React.Dispatch<React.SetStateAction<Record<string, any>[]>>
 } | null>(null);
 
 const useAppContext = () => {

@@ -1,14 +1,13 @@
-import { useState } from 'react';
+import { useState, type CSSProperties } from 'react';
 import './App.css';
 import { AppContext } from './context.tsx';
 import type { TabType } from './type.ts';
 import AdminTab from './features/admin.tsx';
 import UserTab from './features/user.tsx';
 import { TabButton } from './features/tab.tsx';
-import useSelectTab from './hooks/selectTab.ts';
 
 function App() {
-	const style = {
+	const style: CSSProperties = {
 		padding: '10px',
 		display: 'flex',
 		width: '100vw',
@@ -23,7 +22,10 @@ function App() {
 	const [ isModal, setIsModal ] = useState<boolean>(false);
 	const [ selectedTab, setSelectedTab ] = useState<TabType>(1);
 	const [ modalID, setModalID ] = useState<number>(-1);
-	const [ body, setBody ] = useState<Record<string, number>>({});
+	const [ body, setBody ] = useState<Record<string, string>>({
+		categoria: '',
+		ano: '0000'
+	});
 	const [ fetchConfig, setFetchConfig ] = useState<Record<string, unknown>>({});
 
 	return (

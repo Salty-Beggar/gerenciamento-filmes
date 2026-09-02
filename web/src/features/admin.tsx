@@ -1,8 +1,10 @@
 
 import { useState, useCallback } from 'react';
 import Tab from './tab.tsx';
+import useAppContext from '../context.tsx';
 
 const AdminTab = () => {
+	const { fetchConfig, setFetchConfig } = useAppContext();
 	const [isCreating, setIsCreating] = useState<boolean>(false);
 	const [isEditing, setIsEditing] = useState<boolean>(false);
 	const [editedKey, setEditedKey] = useState<number>(-1);
@@ -21,24 +23,15 @@ const AdminTab = () => {
 		link: '',
 		imagem: undefined,
 	});
-	const [filmes, setFilmes] = useState<{
-		nome: string,
-		sinopse: string,
-		ano: string,
-		categoria: string,
-		link: string,
-		imagem: string,
-	}[]>([]);
-	// const filmes = [
-	// 	{
-	// 		nome: 'Shrek 2',
-	// 		sinopse: 'O shrek 2 é um filme muito massa.',
-	// 		ano: '2023',
-	// 		categoria: 'Ficção científica',
-	// 		link: 'http://blehhh.com',
-	// 		imagem: 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fstatic.tvtropes.org%2Fpmwiki%2Fpub%2Fimages%2Fultrakill_cover.jpg&f=1&nofb=1&ipt=5f7f79e75656ed7d7a5991a07ccf7ba06b0456c0217c257a4fa69d45df97309a'
-	// 	}
-	// ];
+	// const [filmes, setFetchConfig] = useState<{
+	// 	id: number,
+	// 	nome: string,
+	// 	sinopse: string,
+	// 	ano: string,
+	// 	categoria: string,
+	// 	link: string,
+	// 	imagem: string,
+	// }[]>([]);
 
 	const create = {
 		handleStart: useCallback(() => {
@@ -60,17 +53,22 @@ const AdminTab = () => {
 		}, [isCreating, setIsCreating]),
 		handleConfirm: useCallback(async () => {
 			if (!isCreating) return;
+
+			const formData = new FormData();
+			formData.append('files', filmeState.imagem);
+			formData.append('titulo', filmeState.nome);
+			formData.append('sinopse', filmeState.sinopse);
+			formData.append('ano', filmeState.ano);
+			formData.append('categoria_id', filmeState.categoria.toString());
+			formData.append('trailer_url', filmeState.link);
 			const response = await fetch('http://localhost:8000/api/admin/filme', {
 				method: 'POST',
-				body: JSON.stringify({
-					...filmeState
-				})
+				body: formData,
 			});
 			const novoFilme = await response.json();
-			console.log(novoFilme);
-			setFilmes(prev => [...prev, novoFilme]);
+			setFetchConfig(prev => [...prev, novoFilme]);
 			setIsCreating(false);
-		}, [isCreating, setIsCreating, filmeState]),
+		}, [isCreating, filmeState.imagem, filmeState.nome, filmeState.sinopse, filmeState.ano, filmeState.categoria, filmeState.link, setFetchConfig]),
 	};
 
 	const edit = {
@@ -91,11 +89,25 @@ const AdminTab = () => {
 			if (!isEditing) return;
 			setIsEditing(false);
 		}, [isEditing, setIsEditing]),
-		handleConfirm: useCallback(() => {
+		handleConfirm: useCallback(async () => {
 			if (!isEditing) return;
 			console.log(filmeState);
+
+			const formData = new FormData();
+			// formData.append('files', filmeState.imagem);
+			formData.append('titulo', filmeState.nome);
+			formData.append('sinopse', filmeState.sinopse);
+			formData.append('ano', filmeState.ano);
+			formData.append('categoria_id', filmeState.categoria.toString());
+			formData.append('trailer_url', filmeState.link);
+			const response = await fetch('http://localhost:8000/api/admin/filme', {
+				method: 'POST',
+				body: formData,
+			});
+			const novoFilme = await response.json();
+			setFetchConfig(prev => prev.map(filme => filme.id === novoFilme.id ? novoFilme : filme));
 			setIsEditing(false);
-		}, [isEditing, setIsEditing, filmeState]),
+		}, [isEditing, filmeState, setFetchConfig]),
 	};
 
 	return <Tab tabType={1}>
@@ -171,7 +183,7 @@ const AdminTab = () => {
 						</td>
 					</tr>
 				) }
-				{filmes.map((filme, index) => (!isEditing || index !== editedKey) ? (
+				{fetchConfig.map((filme, index) => (!isEditing || index !== editedKey) ? (
 					<tr key={index}>
 						<td>
 							{filme.nome}
