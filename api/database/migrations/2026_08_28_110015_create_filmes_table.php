@@ -3,6 +3,8 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use App\Models\User;
+use App\Models\Categoria;
 
 return new class extends Migration
 {
@@ -13,11 +15,11 @@ return new class extends Migration
     {
         Schema::create('filmes', function (Blueprint $table) {
             $table->id();
-	    $table->foreign('usuario_id', User::class);
+	    $table->foreignId('usuario_id', 'users');
 	    $table->string('titulo');
 	    $table->text('sinopse');
 	    $table->year('ano');
-	    $table->foreign('categoria_id', Categoria::class);
+	    $table->foreignId('categoria_id', 'categorias');
 	    $table->string('imagem_capa');
 	    $table->string('trailer_url');
             $table->timestamps();
