@@ -108,7 +108,7 @@ const AdminTab = () => {
 			const novoFilme = await response.json();
 			setFilmes(prev => [...prev, novoFilme]);
 			setIsCreating(false);
-		}, [isCreating, filmeState.imagem, filmeState.nome, filmeState.sinopse, filmeState.ano, filmeState.categoria, filmeState.link, setFetchConfig]),
+		}, [isCreating, filmeState.imagem, filmeState.nome, filmeState.sinopse, filmeState.ano, filmeState.categoria, filmeState.link, filmeState.usuario]),
 	};
 
 	const edit = {

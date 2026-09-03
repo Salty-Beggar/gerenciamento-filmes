@@ -5,7 +5,7 @@ import useAppContext from '../context.tsx';
 import useOpenModal from '../hooks/openModal.ts';
 
 const UserTab = () => {
-		  const { fetchConfig, loadingTab } = useAppContext();
+		  const { body, setBody, fetchConfig, loadingTab } = useAppContext();
 	const openModal = useOpenModal();
 	const [filmes, setFilmes] = useState<{
 		id: number,
@@ -13,16 +13,6 @@ const UserTab = () => {
 		sinopse: string,
 		ano: string,
 		categoria: string,
-		link: string,
-		imagem: string,
-	}[]>([]);
-
-	const [filmes, setFilmes] = useState<{
-		nome: string,
-		sinopse: string,
-		ano: string,
-		categoria: string,
-		usuario: string,
 		link: string,
 		imagem: string,
 	}[]>([]);
