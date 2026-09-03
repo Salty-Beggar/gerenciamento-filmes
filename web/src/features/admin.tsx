@@ -1,12 +1,13 @@
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import Tab from './tab.tsx';
 import useAppContext from '../context.tsx';
 
 const AdminTab = () => {
-	const { fetchConfig, setFetchConfig } = useAppContext();
+	const { fetchConfig, loadingTab } = useAppContext();
 	const [isCreating, setIsCreating] = useState<boolean>(false);
 	const [isEditing, setIsEditing] = useState<boolean>(false);
+	const [editedID, setEditedID] = useState<string>('');
 	const [editedKey, setEditedKey] = useState<number>(-1);
 	const [filmeState, setFilmeState] = useState<{
 		nome: string,
@@ -14,6 +15,7 @@ const AdminTab = () => {
 		ano: string,
 		categoria: number,
 		link: string,
+		usuario: number,
 		imagem: File|undefined,	
 	}>({
 		nome: '',
@@ -21,17 +23,54 @@ const AdminTab = () => {
 		ano: '',
 		categoria: -1,
 		link: '',
+		usuario: -1,
 		imagem: undefined,
 	});
-	// const [filmes, setFetchConfig] = useState<{
-	// 	id: number,
-	// 	nome: string,
-	// 	sinopse: string,
-	// 	ano: string,
-	// 	categoria: string,
-	// 	link: string,
-	// 	imagem: string,
-	// }[]>([]);
+	const [filmes, setFilmes] = useState<{
+		nome: string,
+		sinopse: string,
+		ano: string,
+		categoria: string,
+		usuario: string,
+		link: string,
+		imagem: string,
+	}[]>([]);
+	const [categorias, setCategorias] = useState<{
+		option: string,
+		key: string,
+	}[]>([]);
+	const [usuarios, setUsuarios] = useState<{
+		option: string,
+		key: string,
+	}[]>([]);
+	// const filmes = [
+	// 	{
+	// 		nome: 'Shrek 2',
+	// 		sinopse: 'O shrek 2 é um filme muito massa.',
+	// 		ano: '2023',
+	// 		categoria: 'Ficção científica',
+	// 		link: 'http://blehhh.com',
+	// 		imagem: 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fstatic.tvtropes.org%2Fpmwiki%2Fpub%2Fimages%2Fultrakill_cover.jpg&f=1&nofb=1&ipt=5f7f79e75656ed7d7a5991a07ccf7ba06b0456c0217c257a4fa69d45df97309a'
+	// 	}
+	// ];
+	
+	useEffect(() => {
+		fetch('http://localhost:8000/api/categorias', {})
+		.then((response) => response.json())
+		.then((response) => {
+			setCategorias(response);
+		});
+		fetch('http://localhost:8000/api/usuarios', {})
+		.then((response) => response.json())
+		.then((response) => {
+			setUsuarios(response);
+		});
+	}, []);
+
+	useEffect(() => {
+			  setFilmes(fetchConfig);
+			  console.log(fetchConfig);
+	}, [fetchConfig, loadingTab]);
 
 	const create = {
 		handleStart: useCallback(() => {
@@ -45,6 +84,7 @@ const AdminTab = () => {
 				  categoria: -1,
 				  link: '',
 				  imagem: undefined,
+				  usuario: -1,
 			  });
 		}, [isCreating, setIsCreating, isEditing]),
 		handleCancel: useCallback(() => {
@@ -53,20 +93,20 @@ const AdminTab = () => {
 		}, [isCreating, setIsCreating]),
 		handleConfirm: useCallback(async () => {
 			if (!isCreating) return;
-
 			const formData = new FormData();
-			formData.append('files', filmeState.imagem);
+			if (filmeState.imagem) formData.append('imagem', filmeState.imagem);
 			formData.append('titulo', filmeState.nome);
 			formData.append('sinopse', filmeState.sinopse);
 			formData.append('ano', filmeState.ano);
 			formData.append('categoria_id', filmeState.categoria.toString());
+			formData.append('usuario_id', filmeState.usuario.toString());
 			formData.append('trailer_url', filmeState.link);
 			const response = await fetch('http://localhost:8000/api/admin/filme', {
 				method: 'POST',
-				body: formData,
+				body: formData
 			});
 			const novoFilme = await response.json();
-			setFetchConfig(prev => [...prev, novoFilme]);
+			setFilmes(prev => [...prev, novoFilme]);
 			setIsCreating(false);
 		}, [isCreating, filmeState.imagem, filmeState.nome, filmeState.sinopse, filmeState.ano, filmeState.categoria, filmeState.link, setFetchConfig]),
 	};
@@ -81,6 +121,7 @@ const AdminTab = () => {
 				  sinopse: '',
 				  ano: '',
 				  categoria: -1,
+				  usuario: -1,
 				  link: '',
 				  imagem: undefined,
 			  });
@@ -91,24 +132,25 @@ const AdminTab = () => {
 		}, [isEditing, setIsEditing]),
 		handleConfirm: useCallback(async () => {
 			if (!isEditing) return;
-			console.log(filmeState);
-
 			const formData = new FormData();
-			// formData.append('files', filmeState.imagem);
+			if (filmeState.imagem) formData.append('imagem', filmeState.imagem);
 			formData.append('titulo', filmeState.nome);
 			formData.append('sinopse', filmeState.sinopse);
 			formData.append('ano', filmeState.ano);
 			formData.append('categoria_id', filmeState.categoria.toString());
+			formData.append('usuario_id', filmeState.usuario.toString());
 			formData.append('trailer_url', filmeState.link);
-			const response = await fetch('http://localhost:8000/api/admin/filme', {
+			const response = await fetch('http://localhost:8000/api/admin/filme/'+editedKey, {
 				method: 'POST',
-				body: formData,
+				body: formData
 			});
 			const novoFilme = await response.json();
-			setFetchConfig(prev => prev.map(filme => filme.id === novoFilme.id ? novoFilme : filme));
+			setFilmes(prev => prev.map(filme => filme.id === novoFilme.id ? novoFilme : filme));
 			setIsEditing(false);
-		}, [isEditing, filmeState, setFetchConfig]),
+		}, [isEditing, setIsEditing, filmeState, editedKey]),
 	};
+
+	useEffect(() => console.log(filmeState), [filmeState]);
 
 	return <Tab tabType={1}>
 		<div>
@@ -142,6 +184,9 @@ const AdminTab = () => {
 					Imagem
 				</td>	
 				<td>
+					Usuário
+				</td>	
+				<td>
 					Editar
 				</td>
 			</thead>	
@@ -167,8 +212,7 @@ const AdminTab = () => {
 							<select value={filmeState.categoria} onChange={(e) => {
 								setFilmeState(prev => ({...prev, categoria: Number(e.target.value)}))
 							}}>
-								<option value={1}>Hello</option>
-								<option value={2}>Hcccello</option>
+							{categorias.map(categoria => <option key={categoria.key} value={categoria.key}>{categoria.option}</option>)}
 							</select>
 						</td>
 						<td>
@@ -181,9 +225,16 @@ const AdminTab = () => {
 								setFilmeState(prev => ({...prev, imagem: e.target.files?.[0]}));
 							}} />
 						</td>
+						<td>
+							<select value={filmeState.usuario} onChange={(e) => {
+								setFilmeState(prev => ({...prev, usuario: Number(e.target.value)}))
+							}}>
+							{usuarios.map(usuario => <option key={usuario.key} value={usuario.key}>{usuario.option}</option>)}
+							</select>
+						</td>
 					</tr>
 				) }
-				{fetchConfig.map((filme, index) => (!isEditing || index !== editedKey) ? (
+				{filmes.map((filme, index) => (!isEditing || filme.id !== editedKey) ? (
 					<tr key={index}>
 						<td>
 							{filme.nome}
@@ -206,7 +257,10 @@ const AdminTab = () => {
 							<img style={{ height: '100px' }} src={filme.imagem}/>
 						</td>
 						<td>
-							<button type='button' onClick={() => edit.handleStart(index)}>
+							{filme.usuario}
+						</td>
+						<td>
+							<button type='button' onClick={() => edit.handleStart(filme.id)}>
 								X
 							</button>
 				 		</td>
@@ -232,8 +286,7 @@ const AdminTab = () => {
 							<select value={filmeState.categoria} onChange={(e) => {
 								setFilmeState(prev => ({...prev, categoria: Number(e.target.value)}))
 							}}>
-								<option value={1}>Hello</option>
-								<option value={2}>Hcccello</option>
+							{categorias.map(categoria => <option key={categoria.key} value={categoria.key}>{categoria.option}</option>)}
 							</select>
 						</td>
 						<td>
@@ -245,6 +298,13 @@ const AdminTab = () => {
 							<input type='file' onChange={(e) => {
 								setFilmeState(prev => ({...prev, imagem: e.target.files?.[0]}));
 							}} />
+						</td>
+						<td>
+							<select value={filmeState.usuario} onChange={(e) => {
+								setFilmeState(prev => ({...prev, usuario: Number(e.target.value)}))
+							}}>
+							{usuarios.map(categoria => <option key={categoria.key} value={categoria.key}>{categoria.option}</option>)}
+							</select>
 						</td>
 						<td>
 							<button type='button' onClick={() => edit.handleConfirm()}>

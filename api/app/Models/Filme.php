@@ -3,12 +3,25 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['titulo', 'sinopse', 'ano', 'categoria_id', 'trailer_url'])]
+#[Fillable(['titulo', 'sinopse', 'ano', 'categoria_id', 'usuario_id', 'trailer_url'])]
 class Filme extends Model
 {
-	function categoria(): HasOne
+	protected $fillable = [
+		'titulo',
+		'sinopse',
+		'ano',
+		'categoria_id',
+		'usuario_id',
+		'trailer_url',	
+	];
+	function categoria(): BelongsTo
 	{
-		return $this->hasOne(Categoria::class, 'categoria_id');
+		return $this->belongsTo(Categoria::class, 'categoria_id');
+	}
+	function usuario(): BelongsTo
+	{
+		return $this->belongsTo(User::class, 'usuario_id');
 	}
 }

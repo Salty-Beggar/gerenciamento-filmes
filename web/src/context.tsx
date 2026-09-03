@@ -13,8 +13,10 @@ export const AppContext = createContext<{
 	setIsModal: React.Dispatch<React.SetStateAction<boolean>>,
 	modalID: number,
 	setModalID: React.Dispatch<React.SetStateAction<number>>,
-	fetchConfig: Record<string, any>[],
-	setFetchConfig: React.Dispatch<React.SetStateAction<Record<string, any>[]>>
+	fetchConfig: Record<string, unknown>[],
+	setFetchConfig: React.Dispatch<React.SetStateAction<Record<string, unknown>[]>>,
+	modalConfig: Record<string, unknown>,
+	setModalConfig: React.Dispatch<React.SetStateAction<Record<string, unknown>>>,
 } | null>(null);
 
 const useAppContext = () => {

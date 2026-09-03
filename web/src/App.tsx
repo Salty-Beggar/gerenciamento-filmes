@@ -22,11 +22,9 @@ function App() {
 	const [ isModal, setIsModal ] = useState<boolean>(false);
 	const [ selectedTab, setSelectedTab ] = useState<TabType>(1);
 	const [ modalID, setModalID ] = useState<number>(-1);
-	const [ body, setBody ] = useState<Record<string, string>>({
-		categoria: '',
-		ano: '0000'
-	});
-	const [ fetchConfig, setFetchConfig ] = useState<Record<string, unknown>>({});
+	const [ body, setBody ] = useState<Record<string, number>>({});
+	const [ fetchConfig, setFetchConfig ] = useState<Record<string, unknown>[]>([]);
+	const [ modalConfig, setModalConfig ] = useState<Record<string, unknown>>({});
 
 	return (
 		<AppContext value={{
@@ -42,13 +40,23 @@ function App() {
 			setModalID,
 			fetchConfig,
 			setFetchConfig,
+			modalConfig,
+			setModalConfig,
 		}}>
 			{isModal && <div className='modal'>
 				<div style={{
 					backgroundColor: 'white',	
 					border: '2px black solid'
-				}}>
-					Teste modal
+				}} onClick={() => setIsModal(false)}>
+				{ modalConfig.id !== null && (<>
+						     <div>Nome: {modalConfig.nome}</div>
+						     <div>Sinopse: {modalConfig.sinopse}</div>
+						     <div>Categoria: {modalConfig.categoria}</div>
+						     <div>Usuario: {modalConfig.usuario}</div>
+						     <div>Trailer: {modalConfig.link}</div>
+						     <div>Ano: {modalConfig.ano}</div>
+						     <img src={modalConfig.imagem}/>
+						     </>)}
 				</div>
 			</div>}
 			<div style={style}>
